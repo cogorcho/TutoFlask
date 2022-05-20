@@ -40,7 +40,7 @@ def create_app(test_config=None):
     # A simple route to start
     @app.route('/hola')
     def hola():
-        return 'Hola mundo!'
+        return 'Hola, mundo!'
 
     from . import db
     db.init_app(app)
