@@ -40,7 +40,7 @@ def init_mongo_command():
 
     csv_folder = os.path.join(current_app.static_folder,'CSV')
     json_folder = os.path.join(current_app.static_folder,'JSON')
-    crear_jsons(csv_folder, json_folder)
+    create_jsons(csv_folder, json_folder)
 
     click.echo("Initialized the mongo database")
 
@@ -51,24 +51,12 @@ def init_app(app):
 #------------------------------------------------------------------
 #
 #------------------------------------------------------------------
-def buscar_csv(str_dir):
-    return os.listdir(str_dir)
-
-
-def clear_folder(folder):
-    for fx in os.listdir(folder):
-        print(f'Deleting {folder}/{fx}')
-        os.unlink(os.path.join(folder, fx))
-
-def drop_collection(coll):
-    coll_to_drop = coll.replace(".csv","").capitalize()
-    print("drop_colection", coll_to_drop)
-    client = MongoClient('mongodb://localhost:27017')
-    db = client['TestEscuelas']
-    Collection = db[coll_to_drop]
-    Collection.drop()
-
-def crear_jsons(csv_folder, json_folder):
+def create_jsons(csv_folder, json_folder):
+    """
+    Crear los archivos .json para cargar a la DB
+    csv_folder: Donde estan los csv q se tranforman a json
+    json_folder: Destino de los archivos .json generados
+    """
     clear_folder(json_folder)
 
     for fx in os.listdir(csv_folder):
@@ -78,7 +66,41 @@ def crear_jsons(csv_folder, json_folder):
         drop_collection(coll)
         create_collection(coll, json_folder)
 
+
+def clear_folder(folder):
+    """
+    Borrar los archivos de una carpeta (folder)
+    """
+    for fx in os.listdir(folder):
+        print(f'Deleting {folder}/{fx}')
+        os.unlink(os.path.join(folder, fx))
+
+
+def drop_collection(coll):
+    """
+    Eliminar una coleccion de la DB
+    """
+    coll_to_drop = coll.replace(".csv","").capitalize()
+    print("drop_colection", coll_to_drop)
+    client = MongoClient('mongodb://localhost:27017')
+    db = client['TestEscuelas']
+    Collection = db[coll_to_drop]
+    Collection.drop()
+
+
+def buscar_csv(folder):
+    """
+    Buscar archivos en la carpeta (folder))
+    """
+    return os.listdir(folder)
+
+
+
 def create_collection(coll, folder):
+    """
+    Una vez generado el archivo .json en (folder), 
+    crear la coleccion (coll)
+    """
     coll_to_create = coll.capitalize()
     print("create_colection", coll_to_create)
     client = MongoClient('mongodb://localhost:27017')
@@ -98,7 +120,7 @@ def create_collection(coll, folder):
 #------------------------------------------------------------------
 def gendata(archivo):
 	"""
-    Abre el archivo csv de escuelas y genera una lista
+    Abre el archivo csv (archivo) y genera una lista
 	de dict, uno por escuela
     """
 
@@ -129,7 +151,9 @@ def gendata(archivo):
 #
 #------------------------------------------------------------------
 def jfile(data, archivo):
-	"""Crea el archivo json de escuelas"""
+	"""
+    Crea el archivo (archivo) json de escuelas
+    """
 
 	print(f"Generating {archivo}")
 	with codecs.open(archivo,'w',encoding='utf-8') as f:

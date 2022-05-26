@@ -31,7 +31,8 @@ def sectores():
     return jsonify(result)
 
 #------------------------------------------------------------
-
+# DATOS GEOGRAFICOS
+#------------------------------------------------------------
 @bp.route('/provincias')
 def provincias_full():
     collection = get_mongo()['Provincias']
@@ -40,48 +41,62 @@ def provincias_full():
     result = list(collection.find(where, projection).sort('nombre', pymongo.ASCENDING))
     return jsonify(result)
 
-# @bp.route('/provincia/<id>')
-# def provincias(id):
-#     collection = get_mongo()['Provincias']
-#     where = {'id': id}
-#     projection = {"_id": 0}
-#     result = list(collection.find(where,projection))
-#     return jsonify(result)
 
+#------------------------------------------------------------
+# DATOS DE ESCUELAS
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+# SUMARIZACIONES
+#------------------------------------------------------------
+@bp.route('/')
+def escuelas_por_provincia():
+    return jsonify(get_summarization('Escuelas','Jurisdicción'))
+
+@bp.route('/sector')
+def escuelas_por_sectores():
+    return jsonify(get_summarization('Escuelas','Sector'))
+
+@bp.route('/ambito')
+def escuelas_por_ambitos():
+    return jsonify(get_summarization('Escuelas','Ámbito'))
+
+@bp.route('/codpos')
+def escuelas_por_codigos_postales():
+    return jsonify(get_summarization('Escuelas','CP'))
+
+#-------------------------------------------------------------------
+# DETALLE
+#-------------------------------------------------------------------
 @bp.route('/sector/<sector>')
 def escuelas_por_sector(sector):
-    collection = get_mongo()['Escuelas']
     where = {'Sector': sector}
-    projection = {"_id": 0,}
-    result = list(collection.find(where,projection))
-    return jsonify(result)
+    return get_data('Escuelas', where)
+
 
 @bp.route('/codpos/<codpos>')
 def escuelas_por_codpos(codpos):
-    collection = get_mongo()['Escuelas']
     where = {'CP': codpos}
-    projection = {"_id": 0,}
-    result = list(collection.find(where,projection))
-    return jsonify(result)
+    return get_data('Escuelas', where)
 
-#@bp.route('/tiposeducacion/<id>')
-#def tipos_educacion_por_escuela(id):
-#    collection = get_mongo()['TiposEducacion']
-#    where = {'CUE Anexo': id}
-#    projection = {'_id': 0}
-#    result = list(collection.find(where, projection))
-#    return jsonify(result)
+
 @bp.route('/tiposeducacion/<id>')
 def tipos_educacion_por_escuela(id):
     where = {'CUE Anexo': id}
-    #projection = {'_id': 0}
     return get_data('TiposEducacion', where)
     
+
 @bp.route('/provincia/<id>')
 def provincias(id):
     where = {'id': id}
     return get_data('Provincias', where)
 
+
+
+
+#--------------------------------------------------
+# FUNCIONES EXTRA
+#--------------------------------------------------
 def get_data(str_collection, obj_where, obj_projection={"_id":0}):
     """
     Va a la DB y retorna los datos
@@ -89,3 +104,23 @@ def get_data(str_collection, obj_where, obj_projection={"_id":0}):
     collection = get_mongo()[str_collection]
     result = list(collection.find(obj_where, obj_projection))
     return jsonify(result)
+
+def get_summarization(str_collection, str_column):
+    collection = get_mongo()[str_collection]
+    pipeline = [
+        {
+            "$group":
+            {
+                "_id":f"${str_column}",
+                "escuelas": 
+                {
+                    "$sum":1
+                }
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        }
+    ]
+    #print(pipeline)
+    return list(collection.aggregate(pipeline))
