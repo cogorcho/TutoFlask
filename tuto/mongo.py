@@ -107,7 +107,7 @@ def create_collection(coll, folder):
     db = client['TestEscuelas']
     Collection = db[coll_to_create]
    
-    with open(os.path.join(folder, f"{coll}.json")) as fx:
+    with open(os.path.join(folder, f"{coll}.json"),encoding='utf-8') as fx:
         file_data = json.load(fx)
 
     if isinstance(file_data, list):
@@ -116,39 +116,49 @@ def create_collection(coll, folder):
         Collection.insert_one(file_data)
 
 #------------------------------------------------------------------
-#
+# mongoimport -c Escuelas -d TestEscuelas --mode upsert --file escuelas.csv --type csv --headerline
 #------------------------------------------------------------------
 def gendata(archivo):
-	"""
+    """
     Abre el archivo csv (archivo) y genera una lista
-	de dict, uno por escuela
+    de dict, uno por escuela
     """
 
-	with open(archivo) as e:
-		lines = e.readlines()
+    print(f"gendata {archivo}")
 
-	keys = lines[0].rstrip("\n").split('|')
-	data = []
+    with open(archivo) as e:
+        lines = e.readlines()
 
-	for i in range(1,len(lines)):
-		values = lines[i].rstrip("\n").split('|')
-		e = {}
-		for k,v in zip(keys, values):
-			if v == "X":
-				val = "SI"
-			elif v == "":
-				val = "NO"
-			else:
-				val = v
+    keys = lines[0].rstrip("\n").split('|')
+    data = []
 
-			e[k.replace("Ed. ","")] = val
-		data.append(e)
+    for i in range(1,len(lines)):
+        values = lines[i].rstrip("\n").split('|')
+        e = {}
 
-	return data
+        if os.path.basename(archivo).startswith('niveles') or os.path.basename(archivo).startswith('tiposeducacion') :
+            entra = False
+            niveles = []
+            for k,v in zip(keys, values):
+                if k == 'CUE Anexo':
+                    e[k] = v
+                elif v == "X":
+                    niveles.append(k.replace("Ed. ",""))
+                    entra = True
+                    continue
+            if entra:
+                e['datos'] = niveles
+                data.append(e)  
+        else:
+            for k,v in zip(keys, values):
+                e[k] = v
+            data.append(e)
+
+    return data
 
 
 #------------------------------------------------------------------
-#
+# 63246
 #------------------------------------------------------------------
 def jfile(data, archivo):
 	"""
