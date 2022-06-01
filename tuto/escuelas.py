@@ -9,6 +9,10 @@ import pymongo
 from tuto.auth import login_required
 from tuto.mongo import get_mongo
 
+"""
+    Datos:
+        https://datos.gob.ar/dataset/ign-unidades-territoriales/archivo/ign_01.02.01
+"""
 
 bp = Blueprint('escuelas', __name__, url_prefix='/escuelas')
 

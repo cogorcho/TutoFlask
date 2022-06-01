@@ -14,20 +14,30 @@ import codecs
 client = MongoClient('mongodb://localhost:27017')
 
 def get_mongo():
+    """
+        Open DB Connection
+    """
     if 'mongo' not in g:
         g.mongo = client['TestEscuelas']
 
     return g.mongo
 
 def close_mongo(e=None):
+    """
+        Close DB Connection.
+        This is still under review.
+    """
     mongo = g.pop('mongo', None)
 
     # if mongo is not None:
     #     client.close()
 
-def init_db():
-    print('mongo.init-db')
-    db = get_mongo()
+# def init_db():
+#     """
+
+#     """
+#     print('mongo.init-db')
+#     db = get_mongo()
 
 
 @click.command('init-mongo')
@@ -37,10 +47,12 @@ def init_mongo_command():
     Clear the existing data and create new tables
     """
     print('mongo.init_mongo_command')
+    
 
     csv_folder = os.path.join(current_app.static_folder,'CSV')
     json_folder = os.path.join(current_app.static_folder,'JSON')
     create_jsons(csv_folder, json_folder)
+    cargar_geo_data()
 
     click.echo("Initialized the mongo database")
 
@@ -81,7 +93,7 @@ def drop_collection(coll):
     Eliminar una coleccion de la DB
     """
     coll_to_drop = coll.replace(".csv","").capitalize()
-    print("drop_colection", coll_to_drop)
+    print("drop collection", coll_to_drop)
     client = MongoClient('mongodb://localhost:27017')
     db = client['TestEscuelas']
     Collection = db[coll_to_drop]
@@ -102,7 +114,7 @@ def create_collection(coll, folder):
     crear la coleccion (coll)
     """
     coll_to_create = coll.capitalize()
-    print("create_colection", coll_to_create)
+    print("create collection", coll_to_create)
     client = MongoClient('mongodb://localhost:27017')
     db = client['TestEscuelas']
     Collection = db[coll_to_create]
@@ -176,3 +188,16 @@ def jfile(data, archivo):
 		f.write("]")
 
 	print(f"{archivo} generated OK!")
+
+
+#------------------------------------------------------------------
+# GEO
+#------------------------------------------------------------------
+def cargar_geo_data():
+    json_path = os.path.join(current_app.static_folder,'GEO')
+    archivos = buscar_csv(json_path)
+    print('\n\nDatos Geográficos')
+    for archivo in archivos:
+        coll_name = archivo.replace('.json','')
+        drop_collection(coll_name)
+        create_collection(coll_name, json_path)
