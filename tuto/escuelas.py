@@ -16,6 +16,10 @@ from tuto.mongo import get_mongo
 
 bp = Blueprint('escuelas', __name__, url_prefix='/escuelas')
 
+@bp.route('/index')
+def index():
+    return render_template('escuelas/index.html')
+
 @bp.route('/pcias')
 def pcias():
     collection = get_mongo()['Escuelas']
@@ -32,6 +36,12 @@ def ambitos():
 def sectores():
     collection = get_mongo()['Escuelas']
     result = collection.distinct('Sector')
+    return jsonify(result)
+
+@bp.route('/cps')
+def cps():
+    collection = get_mongo()['Escuelas']
+    result = collection.distinct('CP')
     return jsonify(result)
 
 #------------------------------------------------------------

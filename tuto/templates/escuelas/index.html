@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Escuelas{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr><td><a href="pcias">Lista de Provincias (básica)</a>
+    <tr><td><a href="ambitos">Ámbitos</a>
+    <tr><td><a href="sectores">Sectores</a>
+    <tr><td><a href="/escuelas">Escuelas por Provincia</a>
+    <tr><td><a href="sector">Escuelas por Sector</a>
+    <tr><td><a href="ambito">Escuelas por Àmbito</a>
+    <tr><td><a href="codpos">Escuelas por Código Postal</a>
+    <tr><td><a href="/geo/provincias">Datos de Provincias (completo)</a>
+</table>
+
+{% endblock %}

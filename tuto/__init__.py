@@ -59,4 +59,7 @@ def create_app(test_config=None):
     from . import escuelas
     app.register_blueprint(escuelas.bp)
 
+    from . import geo
+    app.register_blueprint(geo.bp)
+
     return app
