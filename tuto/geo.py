@@ -50,6 +50,13 @@ def munis_por_provincia(id):
 def locas_por_provincia(id):
     return getdata('Localidades', {'provincia.id': id})
 
+
+@bp.route('/provincia/<id>/departamentos')
+def deptos_por_provincias_2(id):
+    return getdata('Departamentos', {'provincia.id': id})
+
+
+
 def getdata(coll, where={}):
     collection = get_mongo()[coll]
     projection = {"_id": 0}

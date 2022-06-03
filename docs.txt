@@ -1,3 +1,5 @@
+Datos random utiles. Puede borrarse en la version final
+
 <!--
 % extends 'base.html' % tells Jinja that this template should replace the blocks from 
 the base template. 
@@ -42,3 +44,8 @@ The base template is directly in the templates directory.
 To keep the others organized, the templates for a blueprint will be placed in a directory 
 with the same name as the blueprint.
 -->
+
+C:\Users\user\AppData\Local\Programs\Python\Python310\lib\encodings\cp1252.py", line 23, in decode
+in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 39: character maps to <undefined>

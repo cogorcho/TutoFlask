@@ -138,7 +138,7 @@ def gendata(archivo):
 
     print(f"gendata {archivo}")
 
-    with open(archivo) as e:
+    with open(archivo, encoding="utf8") as e:
         lines = e.readlines()
 
     keys = lines[0].rstrip("\n").split('|')
@@ -149,16 +149,14 @@ def gendata(archivo):
         e = {}
 
         if os.path.basename(archivo).startswith('niveles') or os.path.basename(archivo).startswith('tiposeducacion') :
-            entra = False
             niveles = []
             for k,v in zip(keys, values):
                 if k == 'CUE Anexo':
                     e[k] = v
                 elif v == "X":
                     niveles.append(k.replace("Ed. ",""))
-                    entra = True
                     continue
-            if entra:
+            if len(niveles) > 0:
                 e['datos'] = niveles
                 data.append(e)  
         else:
@@ -178,7 +176,7 @@ def jfile(data, archivo):
     """
 
 	print(f"Generating {archivo}")
-	with codecs.open(archivo,'w',encoding='utf-8') as f:
+	with codecs.open(archivo,'w',encoding='utf8') as f:
 		for i in range(0,len(data)):
 			if i == 0:
 				f.write("[")
